@@ -41,7 +41,7 @@ def get_all_evaluations(db: Session = Depends(get_db), current_user: User = Depe
         total, level = calculate_total_and_level(input_data)
         results.append({**input_data.dict(), "total": total, "level": level})
 
-    return {"list": results, "status_code": 200}
+    return results
 
 # 🔹 查询指定用户评分
 @router.get("/evaluation", response_model=EvaluationOutput)
