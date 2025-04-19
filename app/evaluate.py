@@ -31,7 +31,7 @@ def create_evaluation(data: EvaluationInput, db: Session = Depends(get_db), curr
     return {**data.dict(), "total": total, "level": level, "status_code": 200}
 
 # 🔹 查询所有评分记录
-@router.get("/evaluations", response_model=list[EvaluationOutput])
+@router.get("/evaluations", response_model=EvaluationOutput)
 def get_all_evaluations(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     records = db.query(Evaluation).all()
     results = []
