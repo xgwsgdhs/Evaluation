@@ -19,3 +19,4 @@ class EvaluationInput(BaseModel):
 class EvaluationOutput(EvaluationInput):
     total: int = Field(..., description="总分")
     level: str = Field(..., description="等级：优秀/良好/一般/较差")
+    status_code: int = Field(..., description="状态")
