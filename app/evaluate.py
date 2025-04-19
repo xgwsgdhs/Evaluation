@@ -28,7 +28,7 @@ def create_evaluation(data: EvaluationInput, db: Session = Depends(get_db), curr
     db.refresh(record)
 
     total, level = calculate_total_and_level(data)
-    return {**data.dict(), "total": total, "level": level}
+    return {**data.dict(), "total": total, "level": level, "status_code": 200}
 
 # 🔹 查询所有评分记录
 @router.get("/evaluations", response_model=list[EvaluationOutput])
@@ -41,7 +41,7 @@ def get_all_evaluations(db: Session = Depends(get_db), current_user: User = Depe
         total, level = calculate_total_and_level(input_data)
         results.append({**input_data.dict(), "total": total, "level": level})
 
-    return results
+    return {"list": results, "status_code": 200}
 
 # 🔹 查询指定用户评分
 @router.get("/evaluation", response_model=EvaluationOutput)
@@ -52,7 +52,7 @@ def get_evaluation_by_name(name: str = Query(...), db: Session = Depends(get_db)
 
     input_data = EvaluationInput(**r.__dict__)
     total, level = calculate_total_and_level(input_data)
-    return {**input_data.dict(), "total": total, "level": level}
+    return {**input_data.dict(), "total": total, "level": level, "status_code": 200}
 
 # 🔹 修改评分（通过 name）
 
@@ -69,7 +69,7 @@ def update_evaluation(name: str = Query(...),data: EvaluationInput = ...,db: Ses
     db.refresh(r)
 
     total, level = calculate_total_and_level(data)
-    return {**data.dict(), "total": total, "level": level}
+    return {**data.dict(), "total": total, "level": level, "status_code": 200}
 
 # 🔹 删除评分记录
 @router.delete("/evaluation")
@@ -80,4 +80,4 @@ def delete_evaluation(name: str = Query(...), db: Session = Depends(get_db)):
 
     db.delete(r)
     db.commit()
-    return {"message": f"{name} 的评分记录已删除"}
+    return {"message": f"{name} 的评分记录已删除", "status_code": 200}

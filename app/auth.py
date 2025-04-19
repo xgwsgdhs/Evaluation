@@ -54,7 +54,7 @@ def login(
         raise HTTPException(status_code=400, detail="用户名或密码错误")
 
     token = create_access_token(data={"sub": user.username})
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "status_code": 200}
 
 
 # 获取当前用户（可用于后续接口）
