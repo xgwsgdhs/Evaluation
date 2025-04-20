@@ -9,7 +9,7 @@ def calculate_total_and_level(data: EvaluationInput) -> tuple[int, str]:
         data.score6, data.score7, data.score8, data.score9, data.score10
     ]
 
-    total = sum(scores)
+    total = sum(score if score is not None else 0 for score in scores)
 
     # 新版等级判断逻辑
     if total >= 40:

@@ -32,17 +32,28 @@ def create_evaluation(data: EvaluationInput, db: Session = Depends(get_db), curr
     return {**data.dict(), "total": total, "level": level, "status_code": 200}
 
 # 🔹 查询所有评分记录
-@router.get("/evaluations", response_model=list[EvaluationOutput])
+@router.get("/evaluations", response_model=dict)
 def get_all_evaluations(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # 查询所有评分记录
     records = db.query(Evaluation).all()
     results = []
 
+    # 遍历每个评分记录
     for r in records:
+        # 创建 EvaluationInput 对象
         input_data = EvaluationInput(**r.__dict__)
-        total, level = calculate_total_and_level(input_data)
-        results.append({**input_data.dict(), "total": total, "level": level})
 
-    return results
+        # 计算总分和等级
+        total, level = calculate_total_and_level(input_data)
+
+        # 创建新的字典，将 `total` 和 `level` 添加到响应中
+        result = {**input_data.dict(), "total": total, "level": level}
+
+        # 将结果添加到结果列表中
+        results.append(result)
+
+    # 返回外层字典，包含 status_code 和 data（评分记录列表）
+    return {"status_code": 200, "data": results}
 
 # 🔹 查询指定用户评分
 @router.get("/evaluation", response_model=EvaluationOutput)
