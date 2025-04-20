@@ -13,12 +13,12 @@ def calculate_total_and_level(data: EvaluationInput) -> tuple[int, str]:
 
     # 新版等级判断逻辑
     if total >= 40:
-        level = "良好"
+        level = "高安全性"
     elif total >= 30:
-        level = "一般"
+        level = "中等安全性"
     elif total >= 20:
-        level = "较差"
+        level = "低安全性"
     else:
-        level = "极差"
+        level = "风险"
 
     return total, level
