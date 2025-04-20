@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, File, UploadFile
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Evaluation
 from app.schemas import EvaluationInput, EvaluationOutput
 from app.logic import calculate_total_and_level
 from app.auth import get_current_user
+from app.excel_handler import handle_excel_file
 from app.models import User
 router = APIRouter()
 
@@ -73,7 +74,7 @@ def update_evaluation(name: str = Query(...),data: EvaluationInput = ...,db: Ses
 
 # 🔹 删除评分记录
 @router.delete("/evaluation")
-def delete_evaluation(name: str = Query(...), db: Session = Depends(get_db)):
+def delete_evaluation(name: str = Query(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     r = db.query(Evaluation).filter(Evaluation.name == name).first()
     if not r:
         raise HTTPException(status_code=404, detail="用户不存在")
@@ -81,3 +82,11 @@ def delete_evaluation(name: str = Query(...), db: Session = Depends(get_db)):
     db.delete(r)
     db.commit()
     return {"message": f"{name} 的评分记录已删除", "status_code": 200}
+
+@router.post("/upload_excel")
+async def upload_excel(file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    接收上传的 Excel 文件并解析数据
+    """
+    result = handle_excel_file(file, db)
+    return result

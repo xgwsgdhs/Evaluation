@@ -35,3 +35,5 @@ dist/
 # 本地 HTTP 请求文件结果（如果使用）
 *.http.json
 tests/
+
+*.xlsx
