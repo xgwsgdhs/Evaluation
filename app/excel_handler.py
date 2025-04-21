@@ -2,6 +2,8 @@ import pandas as pd
 from fastapi import HTTPException
 from app.models import Evaluation  # 你的数据库模型
 from sqlalchemy.orm import Session
+from app.logic import calculate_total_and_level
+from app.schemas import EvaluationInput
 
 def handle_excel_file(file, db: Session):
     """
@@ -78,3 +80,41 @@ def handle_excel_file(file, db: Session):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=e)
+
+def generate_excel(db: Session, file_path: str):
+    """
+    根据数据库中的评估数据生成 Excel 文件。
+    :param db: 数据库会话
+    :param file_path: 保存的文件路径
+    """
+    # 查询所有评分记录
+    records = db.query(Evaluation).all()
+
+    # 准备数据：将查询结果转为字典
+    data = []
+    for r in records:
+        input_data = EvaluationInput(**r.__dict__)
+        total, level = calculate_total_and_level(input_data)
+        data.append({
+            "name": r.name,
+            "score1": r.score1,
+            "score2": r.score2,
+            "score3": r.score3,
+            "score4": r.score4,
+            "score5": r.score5,
+            "score6": r.score6,
+            "score7": r.score7,
+            "score8": r.score8,
+            "score9": r.score9,
+            "score10": r.score10,
+            "total": total,
+            "level": level
+        })
+
+    # 将数据转换为 DataFrame
+    df = pd.DataFrame(data)
+
+    # 生成 Excel 文件并保存
+    df.to_excel(file_path, index=False, engine='openpyxl')
+
+    return file_path

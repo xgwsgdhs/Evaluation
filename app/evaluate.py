@@ -7,6 +7,9 @@ from app.logic import calculate_total_and_level
 from app.auth import get_current_user
 from app.excel_handler import handle_excel_file
 from app.models import User
+from fastapi.responses import FileResponse
+from app.excel_handler import generate_excel
+
 router = APIRouter()
 
 # 依赖项：获取数据库连接
@@ -101,3 +104,16 @@ async def upload_excel(file: UploadFile = File(...), db: Session = Depends(get_d
     """
     result = handle_excel_file(file, db)
     return result
+
+
+@router.get("/download_excel")
+def download_evaluations(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # 定义生成的 Excel 文件路径
+    file_path = "evaluations.xlsx"
+
+    # 调用生成 Excel 文件的函数
+    generate_excel(db, file_path)
+
+    # 返回文件给前端下载
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        filename="evaluations.xlsx")
